@@ -1,0 +1,28 @@
+# Build outputs
+dist/
+build/
+
+# Node modules
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment files
+.env*
+
+# Package files
+package-lock.json
+yarn.lock
+
+# Generated files
+*.generated.*
+
+# Binary files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.svg

@@ -1,0 +1,247 @@
+{
+  "name": "electroloom",
+  "version": "1.0.0",
+  "description": "Cross-platform Arduino simulator with drag-and-drop circuit design, real-time simulation, and headless testing capabilities",
+  "main": "dist/main/index.js",
+  "homepage": "https://electroloom.dev",
+  "author": {
+    "name": "ElectroLoom Team",
+    "email": "team@electroloom.dev"
+  },
+  "license": "MIT",
+  "keywords": [
+    "arduino",
+    "simulator",
+    "electronics",
+    "education",
+    "embedded",
+    "avr",
+    "circuit",
+    "testing"
+  ],
+  "bin": {
+    "electroloom": "dist/cli/index.js",
+    "electroloom-headless": "dist/cli/index.js"
+  },
+  "scripts": {
+    "dev": "npm run build:main && npm run build:preload && concurrently \"npm run dev:renderer\" \"wait-on http://localhost:3000 && npm run dev:electron\"",
+    "dev:electron": "cross-env NODE_ENV=development electron dist/main/index.js",
+    "dev:renderer": "webpack serve --config webpack.renderer.config.js --mode development",
+    "build": "npm run build:clean && npm run build:main && npm run build:preload && npm run build:renderer && npm run build:cli",
+    "build:main": "webpack --config webpack.main.config.js --mode production",
+    "build:preload": "webpack --config webpack.preload.config.js --mode production",
+    "build:renderer": "webpack --config webpack.renderer.config.js --mode production",
+    "build:cli": "webpack --config webpack.cli.config.js --mode production",
+    "build:clean": "rimraf dist/",
+    "start": "electron dist/main/index.js",
+    "start:dev": "electron dist/main/index.js --dev",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "playwright test",
+    "lint": "eslint src --ext .ts,.tsx --max-warnings 0",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "type-check": "tsc --noEmit",
+    "package": "electron-builder",
+    "package:dir": "electron-builder --dir",
+    "package:win": "electron-builder --win",
+    "package:mac": "electron-builder --mac",
+    "package:linux": "electron-builder --linux",
+    "release": "semantic-release",
+    "postinstall": "electron-builder install-app-deps",
+    "cli:test": "node dist/cli/index.js test",
+    "cli:run": "node dist/cli/index.js run",
+    "cli:benchmark": "node dist/cli/index.js benchmark",
+    "prepare": "husky install"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@monaco-editor/react": "^4.6.0",
+    "@mui/icons-material": "^5.14.18",
+    "@mui/material": "^5.14.18",
+    "@reduxjs/toolkit": "^1.9.7",
+    "avr8js": "^0.20.1",
+    "chalk": "^5.3.0",
+    "commander": "^11.1.0",
+    "immutable": "^4.3.4",
+    "inquirer": "^9.2.12",
+    "joi": "^17.11.0",
+    "konva": "^9.2.0",
+    "lodash": "^4.17.21",
+    "monaco-editor": "^0.44.0",
+    "node-pty": "^1.0.0",
+    "react": "^18.2.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
+    "react-dom": "^18.2.0",
+    "react-konva": "^18.2.10",
+    "react-redux": "^8.1.3",
+    "react-router-dom": "^6.20.1",
+    "redux-persist": "^6.0.0",
+    "reselect": "^4.1.8",
+    "rxjs": "^7.8.1",
+    "serialport": "^12.0.0",
+    "uuid": "^9.0.1",
+    "yaml": "^2.3.4",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^9.2.3",
+    "@testing-library/jest-dom": "^6.1.4",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^14.5.1",
+    "@types/inquirer": "^9.0.7",
+    "@types/jest": "^29.5.8",
+    "@types/lodash": "^4.14.201",
+    "@types/node": "^20.9.0",
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@types/uuid": "^9.0.7",
+    "@typescript-eslint/eslint-plugin": "^8.44.0",
+    "@typescript-eslint/parser": "^8.44.0",
+    "concurrently": "^8.2.2",
+    "copy-webpack-plugin": "^11.0.0",
+    "cross-env": "^7.0.3",
+    "css-loader": "^6.8.1",
+    "electron": "^27.1.2",
+    "electron-builder": "^24.6.4",
+    "eslint": "^8.54.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "file-loader": "^6.2.0",
+    "fork-ts-checker-webpack-plugin": "^9.0.2",
+    "html-webpack-plugin": "^5.5.3",
+    "husky": "^8.0.3",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "lint-staged": "^15.1.0",
+    "prettier": "^3.1.0",
+    "rimraf": "^5.0.5",
+    "semantic-release": "^22.0.5",
+    "style-loader": "^3.3.3",
+    "ts-jest": "^29.4.4",
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1",
+    "webpack-node-externals": "^3.0.0"
+  },
+  "build": {
+    "appId": "com.electroloom.app",
+    "productName": "ElectroLoom",
+    "copyright": "Copyright © 2024 ElectroLoom Team",
+    "directories": {
+      "output": "release",
+      "buildResources": "assets"
+    },
+    "files": [
+      "dist/**/*",
+      "assets/**/*",
+      "!node_modules/**/*",
+      "node_modules/@monaco-editor/**/*",
+      "node_modules/avr8js/**/*"
+    ],
+    "extraMetadata": {
+      "main": "dist/main/index.js"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "publisherName": "ElectroLoom Team",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "category": "public.app-category.developer-tools",
+      "hardenedRuntime": true,
+      "entitlements": "assets/entitlements.mac.plist",
+      "entitlementsInherit": "assets/entitlements.mac.plist"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "rpm",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "category": "Development"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{js,jsx,json,css,md}": [
+      "prettier --write"
+    ]
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/electroloom/electroloom.git"
+  },
+  "bugs": {
+    "url": "https://github.com/electroloom/electroloom/issues"
+  }
+}

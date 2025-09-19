@@ -1,7 +1,8 @@
-import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog, shell, Menu } from 'electron';
 import { join } from 'path';
 import { readFile, writeFile } from 'fs/promises';
 import { ElectroLoomProject } from '../shared/types';
+import { createApplicationMenu } from './menu';
 
 // Helper function for error handling
 function getErrorMessage(error: unknown): string {
@@ -14,19 +15,36 @@ let mainWindow: BrowserWindow | null = null;
 const isDevelopment = process.env.NODE_ENV === 'development';
 
 async function createWindow(): Promise<void> {
-  // Create the browser window
-  mainWindow = new BrowserWindow({
+  // Create the browser window with enhanced configuration
+  const windowOptions: Electron.BrowserWindowConstructorOptions = {
     width: 1400,
     height: 900,
-    minWidth: 800,
-    minHeight: 600,
+    minWidth: 1000,
+    minHeight: 700,
     show: false,
+    center: true,
+    titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
+    titleBarOverlay: {
+      color: '#2f3349',
+      symbolColor: '#ffffff'
+    },
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
+      webSecurity: true,
       preload: join(__dirname, '../preload/index.js'),
+      spellcheck: false,
+      devTools: isDevelopment,
     },
-  });
+    backgroundColor: '#2f3349', // Match app theme
+  };
+
+  // Add icon only on Linux to avoid type issues
+  if (process.platform === 'linux') {
+    windowOptions.icon = join(__dirname, '../../assets/icon.png');
+  }
+
+  mainWindow = new BrowserWindow(windowOptions);
 
   // Load the app
   if (isDevelopment) {
@@ -49,6 +67,9 @@ async function createWindow(): Promise<void> {
 
 // App ready
 app.whenReady().then(async () => {
+  // Set up application menu
+  Menu.setApplicationMenu(createApplicationMenu());
+  
   await createWindow();
 
   app.on('activate', async () => {

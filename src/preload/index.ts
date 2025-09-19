@@ -42,6 +42,30 @@ contextBridge.exposeInMainWorld('electronAPI', {
     close: () => ipcRenderer.invoke('window:close'),
     isMaximized: () => ipcRenderer.invoke('window:is-maximized'),
   },
+
+  // Menu event listeners
+  menu: {
+    onNewProject: (callback: () => void) => ipcRenderer.on('menu:new-project', callback),
+    onOpenProject: (callback: () => void) => ipcRenderer.on('menu:open-project', callback),
+    onSaveProject: (callback: () => void) => ipcRenderer.on('menu:save-project', callback),
+    onSaveProjectAs: (callback: () => void) => ipcRenderer.on('menu:save-project-as', callback),
+    onSimulationStart: (callback: () => void) => ipcRenderer.on('menu:simulation-start', callback),
+    onSimulationPause: (callback: () => void) => ipcRenderer.on('menu:simulation-pause', callback),
+    onSimulationStop: (callback: () => void) => ipcRenderer.on('menu:simulation-stop', callback),
+    onSimulationReset: (callback: () => void) => ipcRenderer.on('menu:simulation-reset', callback),
+    onAbout: (callback: () => void) => ipcRenderer.on('menu:about', callback),
+    removeAllListeners: () => {
+      ipcRenderer.removeAllListeners('menu:new-project');
+      ipcRenderer.removeAllListeners('menu:open-project');
+      ipcRenderer.removeAllListeners('menu:save-project');
+      ipcRenderer.removeAllListeners('menu:save-project-as');
+      ipcRenderer.removeAllListeners('menu:simulation-start');
+      ipcRenderer.removeAllListeners('menu:simulation-pause');
+      ipcRenderer.removeAllListeners('menu:simulation-stop');
+      ipcRenderer.removeAllListeners('menu:simulation-reset');
+      ipcRenderer.removeAllListeners('menu:about');
+    },
+  },
 });
 
 // Type declarations for the exposed API
@@ -93,6 +117,18 @@ declare global {
         maximize: () => Promise<void>;
         close: () => Promise<void>;
         isMaximized: () => Promise<boolean>;
+      };
+      menu: {
+        onNewProject: (callback: () => void) => void;
+        onOpenProject: (callback: () => void) => void;
+        onSaveProject: (callback: () => void) => void;
+        onSaveProjectAs: (callback: () => void) => void;
+        onSimulationStart: (callback: () => void) => void;
+        onSimulationPause: (callback: () => void) => void;
+        onSimulationStop: (callback: () => void) => void;
+        onSimulationReset: (callback: () => void) => void;
+        onAbout: (callback: () => void) => void;
+        removeAllListeners: () => void;
       };
     };
   }

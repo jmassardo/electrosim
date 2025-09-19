@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="#2f3349" stroke="#60a5fa" stroke-width="8"/>
+  
+  <!-- Circuit board pattern -->
+  <g opacity="0.3">
+    <!-- Horizontal lines -->
+    <line x1="80" y1="150" x2="432" y2="150" stroke="#60a5fa" stroke-width="2"/>
+    <line x1="80" y1="200" x2="432" y2="200" stroke="#60a5fa" stroke-width="2"/>
+    <line x1="80" y1="300" x2="432" y2="300" stroke="#60a5fa" stroke-width="2"/>
+    <line x1="80" y1="350" x2="432" y2="350" stroke="#60a5fa" stroke-width="2"/>
+    
+    <!-- Vertical lines -->
+    <line x1="150" y1="80" x2="150" y2="432" stroke="#60a5fa" stroke-width="2"/>
+    <line x1="200" y1="80" x2="200" y2="432" stroke="#60a5fa" stroke-width="2"/>
+    <line x1="300" y1="80" x2="300" y2="432" stroke="#60a5fa" stroke-width="2"/>
+    <line x1="350" y1="80" x2="350" y2="432" stroke="#60a5fa" stroke-width="2"/>
+  </g>
+  
+  <!-- Central microcontroller -->
+  <rect x="200" y="200" width="112" height="112" rx="8" fill="#60a5fa"/>
+  <rect x="210" y="210" width="92" height="92" rx="4" fill="#2f3349"/>
+  
+  <!-- Pin connections -->
+  <!-- Top pins -->
+  <rect x="220" y="180" width="8" height="20" fill="#60a5fa"/>
+  <rect x="240" y="180" width="8" height="20" fill="#60a5fa"/>
+  <rect x="260" y="180" width="8" height="20" fill="#60a5fa"/>
+  <rect x="280" y="180" width="8" height="20" fill="#60a5fa"/>
+  
+  <!-- Bottom pins -->
+  <rect x="220" y="312" width="8" height="20" fill="#60a5fa"/>
+  <rect x="240" y="312" width="8" height="20" fill="#60a5fa"/>
+  <rect x="260" y="312" width="8" height="20" fill="#60a5fa"/>
+  <rect x="280" y="312" width="8" height="20" fill="#60a5fa"/>
+  
+  <!-- Left pins -->
+  <rect x="180" y="220" width="20" height="8" fill="#60a5fa"/>
+  <rect x="180" y="240" width="20" height="8" fill="#60a5fa"/>
+  <rect x="180" y="260" width="20" height="8" fill="#60a5fa"/>
+  <rect x="180" y="280" width="20" height="8" fill="#60a5fa"/>
+  
+  <!-- Right pins -->
+  <rect x="312" y="220" width="20" height="8" fill="#60a5fa"/>
+  <rect x="312" y="240" width="20" height="8" fill="#60a5fa"/>
+  <rect x="312" y="260" width="20" height="8" fill="#60a5fa"/>
+  <rect x="312" y="280" width="20" height="8" fill="#60a5fa"/>
+  
+  <!-- Components around the board -->
+  <!-- LED top-left -->
+  <circle cx="120" cy="120" r="12" fill="#10b981"/>
+  <circle cx="120" cy="120" r="8" fill="#34d399"/>
+  
+  <!-- Resistor top-right -->
+  <rect x="370" y="110" width="40" height="20" rx="10" fill="#f59e0b"/>
+  <rect x="375" y="115" width="10" height="10" fill="#2f3349"/>
+  <rect x="395" y="115" width="10" height="10" fill="#2f3349"/>
+  
+  <!-- Capacitor bottom-left -->
+  <rect x="100" y="370" width="8" height="30" fill="#60a5fa"/>
+  <rect x="120" y="370" width="8" height="30" fill="#60a5fa"/>
+  
+  <!-- Switch bottom-right -->
+  <circle cx="390" cy="390" r="15" fill="#ef4444"/>
+  <circle cx="390" cy="390" r="10" fill="#2f3349"/>
+  
+  <!-- ElectroSim text -->
+  <text x="256" y="450" font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="600" text-anchor="middle" fill="#60a5fa">ElectroSim</text>
+</svg>

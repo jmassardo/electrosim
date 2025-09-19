@@ -1,4 +1,4 @@
-import { Menu, MenuItemConstructorOptions } from 'electron';
+import { Menu, MenuItemConstructorOptions, BrowserWindow, app, shell } from 'electron';
 
 export function createApplicationMenu(): Menu {
   const template: MenuItemConstructorOptions[] = [
@@ -9,14 +9,20 @@ export function createApplicationMenu(): Menu {
           label: 'New Project',
           accelerator: 'CmdOrCtrl+N',
           click: () => {
-            // Will be implemented with IPC
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+            if (focusedWindow) {
+              focusedWindow.webContents.send('menu:new-project');
+            }
           },
         },
         {
           label: 'Open Project...',
           accelerator: 'CmdOrCtrl+O',
           click: () => {
-            // Will be implemented with IPC
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+            if (focusedWindow) {
+              focusedWindow.webContents.send('menu:open-project');
+            }
           },
         },
         { type: 'separator' },
@@ -24,14 +30,20 @@ export function createApplicationMenu(): Menu {
           label: 'Save',
           accelerator: 'CmdOrCtrl+S',
           click: () => {
-            // Will be implemented with IPC
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+            if (focusedWindow) {
+              focusedWindow.webContents.send('menu:save-project');
+            }
           },
         },
         {
           label: 'Save As...',
           accelerator: 'CmdOrCtrl+Shift+S',
           click: () => {
-            // Will be implemented with IPC
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+            if (focusedWindow) {
+              focusedWindow.webContents.send('menu:save-project-as');
+            }
           },
         },
         { type: 'separator' },
@@ -39,7 +51,7 @@ export function createApplicationMenu(): Menu {
           label: 'Exit',
           accelerator: process.platform === 'darwin' ? 'Cmd+Q' : 'Ctrl+Q',
           click: () => {
-            // Will quit the app
+            app.quit();
           },
         },
       ],
@@ -63,21 +75,30 @@ export function createApplicationMenu(): Menu {
           label: 'Start/Resume',
           accelerator: 'F5',
           click: () => {
-            // Will be implemented with IPC
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+            if (focusedWindow) {
+              focusedWindow.webContents.send('menu:simulation-start');
+            }
           },
         },
         {
           label: 'Pause',
           accelerator: 'F6',
           click: () => {
-            // Will be implemented with IPC
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+            if (focusedWindow) {
+              focusedWindow.webContents.send('menu:simulation-pause');
+            }
           },
         },
         {
           label: 'Stop',
           accelerator: 'Shift+F5',
           click: () => {
-            // Will be implemented with IPC
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+            if (focusedWindow) {
+              focusedWindow.webContents.send('menu:simulation-stop');
+            }
           },
         },
         { type: 'separator' },
@@ -85,7 +106,10 @@ export function createApplicationMenu(): Menu {
           label: 'Reset Arduino',
           accelerator: 'F7',
           click: () => {
-            // Will be implemented with IPC
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+            if (focusedWindow) {
+              focusedWindow.webContents.send('menu:simulation-reset');
+            }
           },
         },
       ],
@@ -100,13 +124,19 @@ export function createApplicationMenu(): Menu {
               label: 'Enable',
               type: 'checkbox',
               click: () => {
-                // Will be implemented with IPC
+                const focusedWindow = BrowserWindow.getFocusedWindow();
+                if (focusedWindow) {
+                  focusedWindow.webContents.send('menu:virtual-port-toggle');
+                }
               },
             },
             {
               label: 'Configure...',
               click: () => {
-                // Will be implemented with IPC
+                const focusedWindow = BrowserWindow.getFocusedWindow();
+                if (focusedWindow) {
+                  focusedWindow.webContents.send('menu:virtual-port-config');
+                }
               },
             },
           ],
@@ -127,21 +157,24 @@ export function createApplicationMenu(): Menu {
       label: 'Help',
       submenu: [
         {
-          label: 'About Simudino',
+          label: 'About ElectroSim',
           click: () => {
-            // Will show about dialog
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+            if (focusedWindow) {
+              focusedWindow.webContents.send('menu:about');
+            }
           },
         },
         {
           label: 'Documentation',
           click: () => {
-            // Will open documentation
+            shell.openExternal('https://github.com/jmassardo/electrosim/wiki');
           },
         },
         {
           label: 'GitHub Repository',
           click: () => {
-            // Will open GitHub repo
+            shell.openExternal('https://github.com/jmassardo/electrosim');
           },
         },
       ],
@@ -151,7 +184,7 @@ export function createApplicationMenu(): Menu {
   // macOS specific menu adjustments
   if (process.platform === 'darwin') {
     template.unshift({
-      label: 'Simudino',
+      label: 'ElectroSim',
       submenu: [
         { role: 'about' },
         { type: 'separator' },

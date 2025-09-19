@@ -1,12 +1,12 @@
 {
-  "name": "electroloom",
+  "name": "electrosim",
   "version": "1.0.0",
   "description": "Cross-platform Arduino simulator with drag-and-drop circuit design, real-time simulation, and headless testing capabilities",
   "main": "dist/main/index.js",
-  "homepage": "https://electroloom.dev",
+  "homepage": "https://github.com/jmassardo/electrosim",
   "author": {
-    "name": "ElectroLoom Team",
-    "email": "team@electroloom.dev"
+    "name": "James Massardo",
+    "email": "james.massardo@gmail.com"
   },
   "license": "MIT",
   "keywords": [

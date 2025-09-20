@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain, dialog, shell, Menu } from 'electron';
 import { join } from 'path';
 import { readFile, writeFile } from 'fs/promises';
-import { ElectroLoomProject } from '../shared/types';
+import { ElectroSimProject } from '../shared/types';
 import { createApplicationMenu } from './menu';
 
 // Helper function for error handling
@@ -45,6 +45,24 @@ async function createWindow(): Promise<void> {
   }
 
   mainWindow = new BrowserWindow(windowOptions);
+
+  // Set up CSP for development
+  if (isDevelopment) {
+    mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+      callback({
+        responseHeaders: {
+          ...details.responseHeaders,
+          'Content-Security-Policy': [
+            "default-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:3000 ws://localhost:3000; " +
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:3000; " +
+            "style-src 'self' 'unsafe-inline' http://localhost:3000; " +
+            "img-src 'self' data: http://localhost:3000; " +
+            "font-src 'self' data: http://localhost:3000;"
+          ]
+        }
+      });
+    });
+  }
 
   // Load the app
   if (isDevelopment) {
@@ -110,7 +128,7 @@ ipcMain.handle('project:open', async () => {
 
   try {
     const fileContent = await readFile(result.filePaths[0], 'utf-8');
-    const project: ElectroLoomProject = JSON.parse(fileContent);
+    const project: ElectroSimProject = JSON.parse(fileContent);
     return { project, filePath: result.filePaths[0] };
   } catch (error) {
     dialog.showErrorBox('Error', getErrorMessage(error));
@@ -118,7 +136,7 @@ ipcMain.handle('project:open', async () => {
   }
 });
 
-ipcMain.handle('project:save', async (_, project: ElectroLoomProject, filePath?: string) => {
+ipcMain.handle('project:save', async (_, project: ElectroSimProject, filePath?: string) => {
   if (!mainWindow) return null;
 
   let targetPath = filePath;

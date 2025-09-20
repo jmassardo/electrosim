@@ -4,7 +4,34 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob:;">
-  <title>ElectroLoom - Arduino Simulator</title>
+  <title>ElectroSim - Arduino Simulator</title>
+  
+  <!-- Define global variables before any scripts load -->
+  <script>
+    // Define global object for Node.js compatibility
+    if (typeof global === 'undefined') {
+      var global = globalThis || window || this;
+    }
+    
+    // Define process object for Node.js compatibility  
+    if (typeof process === 'undefined') {
+      var process = {
+        env: { NODE_ENV: 'development' },
+        browser: true,
+        version: '',
+        versions: { node: '0.0.0' },
+        nextTick: function(fn) { setTimeout(fn, 0); },
+        stdout: { write: function() {} },
+        stderr: { write: function() {} }
+      };
+    }
+    
+    // Define Buffer if needed
+    if (typeof Buffer === 'undefined') {
+      var Buffer = { isBuffer: function() { return false; } };
+    }
+  </script>
+  
   <style>
     * {
       margin: 0;
@@ -64,7 +91,7 @@
     <div class="loading">
       <div style="text-align: center;">
         <div class="loading-spinner"></div>
-        <div class="loading-text">Loading ElectroLoom...</div>
+        <div class="loading-text">Loading ElectroSim...</div>
       </div>
     </div>
   </div>

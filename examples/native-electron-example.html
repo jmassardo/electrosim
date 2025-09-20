@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ElectroSim - Native Version</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .toolbar {
+            background: #333;
+            color: white;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .canvas-container {
+            border: 1px solid #ccc;
+            background: white;
+            height: 600px;
+            position: relative;
+        }
+        
+        #circuit-canvas {
+            display: block;
+            cursor: crosshair;
+        }
+        
+        .component-palette {
+            position: fixed;
+            right: 20px;
+            top: 100px;
+            width: 200px;
+            background: white;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+        
+        .component-item {
+            padding: 8px;
+            margin: 4px 0;
+            background: #e0e0e0;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        .component-item:hover {
+            background: #d0d0d0;
+        }
+    </style>
+</head>
+<body>
+    <div class="toolbar">
+        <button onclick="newProject()">New</button>
+        <button onclick="openProject()">Open</button>
+        <button onclick="saveProject()">Save</button>
+        <button onclick="zoomIn()">Zoom In</button>
+        <button onclick="zoomOut()">Zoom Out</button>
+    </div>
+    
+    <div class="canvas-container">
+        <canvas id="circuit-canvas" width="800" height="600"></canvas>
+    </div>
+    
+    <div class="component-palette">
+        <h3>Components</h3>
+        <div class="component-item" onclick="selectComponent('arduino')">Arduino Uno</div>
+        <div class="component-item" onclick="selectComponent('led')">LED</div>
+        <div class="component-item" onclick="selectComponent('resistor')">Resistor</div>
+        <div class="component-item" onclick="selectComponent('button')">Button</div>
+    </div>
+
+    <script>
+        // Native JavaScript implementation
+        const { ipcRenderer } = require('electron');
+        
+        let canvas, ctx;
+        let components = [];
+        let selectedComponent = null;
+        let zoom = 1;
+        let panX = 0, panY = 0;
+        
+        // Initialize when page loads
+        window.onload = function() {
+            canvas = document.getElementById('circuit-canvas');
+            ctx = canvas.getContext('2d');
+            
+            // Set up event listeners
+            canvas.addEventListener('mousedown', handleMouseDown);
+            canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('mouseup', handleMouseUp);
+            canvas.addEventListener('wheel', handleWheel);
+            
+            // Start render loop
+            render();
+        };
+        
+        // Canvas drawing functions
+        function render() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Save context for transformations
+            ctx.save();
+            
+            // Apply zoom and pan
+            ctx.translate(panX, panY);
+            ctx.scale(zoom, zoom);
+            
+            // Draw grid
+            drawGrid();
+            
+            // Draw components
+            components.forEach(component => {
+                drawComponent(component);
+            });
+            
+            ctx.restore();
+            
+            // Continue render loop
+            requestAnimationFrame(render);
+        }
+        
+        function drawGrid() {
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            
+            const gridSize = 20;
+            const startX = Math.floor(-panX / (gridSize * zoom)) * gridSize;
+            const startY = Math.floor(-panY / (gridSize * zoom)) * gridSize;
+            
+            // Draw vertical lines
+            for (let x = startX; x < canvas.width / zoom; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, -panY / zoom);
+                ctx.lineTo(x, (canvas.height - panY) / zoom);
+                ctx.stroke();
+            }
+            
+            // Draw horizontal lines
+            for (let y = startY; y < canvas.height / zoom; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(-panX / zoom, y);
+                ctx.lineTo((canvas.width - panX) / zoom, y);
+                ctx.stroke();
+            }
+        }
+        
+        function drawComponent(component) {
+            ctx.fillStyle = component.selected ? '#4CAF50' : '#2196F3';
+            ctx.fillRect(component.x, component.y, component.width, component.height);
+            
+            ctx.fillStyle = 'white';
+            ctx.font = '12px Arial';
+            ctx.fillText(component.label, component.x + 5, component.y + 15);
+        }
+        
+        // Event handlers
+        function handleMouseDown(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left - panX) / zoom;
+            const y = (e.clientY - rect.top - panY) / zoom;
+            
+            // Check if clicking on a component
+            const clickedComponent = components.find(comp => 
+                x >= comp.x && x <= comp.x + comp.width &&
+                y >= comp.y && y <= comp.y + comp.height
+            );
+            
+            if (clickedComponent) {
+                // Select component
+                components.forEach(comp => comp.selected = false);
+                clickedComponent.selected = true;
+            } else if (selectedComponent) {
+                // Place new component
+                components.push({
+                    type: selectedComponent,
+                    x: x,
+                    y: y,
+                    width: 60,
+                    height: 40,
+                    label: selectedComponent,
+                    selected: false
+                });
+                selectedComponent = null;
+            }
+        }
+        
+        function handleMouseMove(e) {
+            // Handle dragging logic here
+        }
+        
+        function handleMouseUp(e) {
+            // Handle mouse up logic here
+        }
+        
+        function handleWheel(e) {
+            e.preventDefault();
+            const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+            zoom *= zoomFactor;
+            zoom = Math.max(0.1, Math.min(5, zoom));
+        }
+        
+        // Toolbar functions
+        function newProject() {
+            components = [];
+            console.log('New project created');
+        }
+        
+        function openProject() {
+            ipcRenderer.invoke('dialog:openFile').then(result => {
+                if (result) {
+                    // Load project file
+                    console.log('Opening project:', result);
+                }
+            });
+        }
+        
+        function saveProject() {
+            const projectData = { components: components };
+            ipcRenderer.invoke('dialog:saveFile', projectData).then(result => {
+                console.log('Project saved:', result);
+            });
+        }
+        
+        function zoomIn() {
+            zoom *= 1.2;
+            zoom = Math.min(5, zoom);
+        }
+        
+        function zoomOut() {
+            zoom *= 0.8;
+            zoom = Math.max(0.1, zoom);
+        }
+        
+        function selectComponent(type) {
+            selectedComponent = type;
+            console.log('Selected component:', type);
+        }
+    </script>
+</body>
+</html>

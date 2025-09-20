@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ElectroLoomProject } from '../../../shared/types';
+import { ElectroSimProject } from '../../../shared/types';
 
 export interface ProjectState {
-  currentProject: ElectroLoomProject | null;
+  currentProject: ElectroSimProject | null;
   isModified: boolean;
   lastSaved: string | null;
   autoSave: boolean;
@@ -19,12 +19,12 @@ export const projectSlice = createSlice({
   name: 'project',
   initialState,
   reducers: {
-    setProject: (state, action: PayloadAction<ElectroLoomProject>) => {
+    setProject: (state, action: PayloadAction<ElectroSimProject>) => {
       state.currentProject = action.payload;
       state.isModified = false;
       state.lastSaved = new Date().toISOString();
     },
-    updateProject: (state, action: PayloadAction<Partial<ElectroLoomProject>>) => {
+    updateProject: (state, action: PayloadAction<Partial<ElectroSimProject>>) => {
       if (state.currentProject) {
         state.currentProject = { ...state.currentProject, ...action.payload };
         state.isModified = true;

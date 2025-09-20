@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Test</title>
+    <script>
+        console.log('Testing global access...');
+        console.log('typeof global:', typeof global);
+        console.log('typeof process:', typeof process);
+        console.log('typeof Buffer:', typeof Buffer);
+        
+        // Test if we can access global
+        try {
+            console.log('global is:', global);
+        } catch (e) {
+            console.error('Error accessing global:', e);
+        }
+        
+        // Define global if it doesn't exist
+        if (typeof global === 'undefined') {
+            var global = globalThis || window;
+            console.log('Defined global as:', global);
+        }
+    </script>
+</head>
+<body>
+    <h1>Minimal Test</h1>
+    <p>Check the console for global variable tests.</p>
+    <div id="root"></div>
+    
+    <script>
+        document.getElementById('root').innerHTML = '<p>Global type: ' + typeof global + '</p>';
+    </script>
+</body>
+</html>

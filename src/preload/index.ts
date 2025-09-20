@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { ElectroLoomProject, SerialConfig } from '@shared/types';
+import { ElectroSimProject, SerialConfig } from '@shared/types';
 
 // Expose protected methods that allow the renderer process to use
 // the ipcRenderer without exposing the entire object
@@ -7,9 +7,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Project management
   project: {
     open: () => ipcRenderer.invoke('project:open'),
-    save: (project: ElectroLoomProject, filePath?: string) => 
+    save: (project: ElectroSimProject, filePath?: string) => 
       ipcRenderer.invoke('project:save', project, filePath),
-    export: (project: ElectroLoomProject, format: 'arduino' | 'pdf' | 'image') =>
+    export: (project: ElectroSimProject, format: 'arduino' | 'pdf' | 'image') =>
       ipcRenderer.invoke('project:export', project, format),
   },
 
@@ -73,13 +73,13 @@ declare global {
   interface Window {
     electronAPI: {
       project: {
-        open: () => Promise<{ project: ElectroLoomProject; filePath: string } | null>;
-        save: (project: ElectroLoomProject, filePath?: string) => Promise<{
+        open: () => Promise<{ project: ElectroSimProject; filePath: string } | null>;
+        save: (project: ElectroSimProject, filePath?: string) => Promise<{
           success: boolean;
           filePath?: string;
           error?: string;
         } | null>;
-        export: (project: ElectroLoomProject, format: 'arduino' | 'pdf' | 'image') => Promise<{
+        export: (project: ElectroSimProject, format: 'arduino' | 'pdf' | 'image') => Promise<{
           success: boolean;
           filePath?: string;
           format?: string;

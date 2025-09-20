@@ -76,10 +76,13 @@ module.exports = {
       },
     },
     {
-      // Test files
-      files: ['**/__tests__/**/*', '**/*.test.ts', '**/*.test.tsx'],
+      // Test files - disable project-based parsing to avoid tsconfig issues
+      files: ['**/__tests__/**/*', '**/*.test.ts', '**/*.test.tsx', 'tests/**/*'],
       env: {
         jest: true,
+      },
+      parserOptions: {
+        project: null, // Disable project-based parsing for test files
       },
       rules: {
         '@typescript-eslint/no-explicit-any': 'off',

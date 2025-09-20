@@ -1,5 +1,5 @@
 /**
- * Core type definitions for ElectroLoom Arduino Simulator
+ * Core type definitions for ElectroSim Arduino Simulator
  */
 
 // Arduino Board Types
@@ -130,7 +130,7 @@ export interface ArduinoSketch {
 }
 
 // Project Structure
-export interface ElectroLoomProject {
+export interface ElectroSimProject {
   id: string;
   name: string;
   version: string;
@@ -263,7 +263,7 @@ export interface VirtualPortInfo {
 
 // UI State Types
 export interface WorkspaceState {
-  activeProject?: ElectroLoomProject;
+  activeProject?: ElectroSimProject;
   recentProjects: string[];
   selectedComponent?: string;
   draggedComponent?: BaseComponent;
@@ -315,7 +315,7 @@ export interface SerialEvent extends SimulationEvent {
 }
 
 // Error Types
-export interface ElectroLoomError extends Error {
+export interface ElectroSimError extends Error {
   code: string;
   category: 'simulation' | 'compilation' | 'hardware' | 'ui' | 'system';
   severity: 'info' | 'warning' | 'error' | 'critical';
@@ -425,3 +425,24 @@ export const DEFAULT_SERIAL_CONFIG: SerialConfig = {
   parity: 'none',
   flowControl: false
 };
+
+// Virtual Serial Port Types
+export { 
+  VirtualSerialPort, 
+  VirtualSerialPortManager
+} from '../../simulation/virtual-port/VirtualSerialPort';
+
+export type { 
+  SerialConfig as VirtualSerialConfig,
+  SerialFrame,
+  SerialPortInfo
+} from '../../simulation/virtual-port/VirtualSerialPort';
+
+export { 
+  ArduinoSerialAPI, 
+  ArduinoSerialManager
+} from '../../simulation/virtual-port/ArduinoSerialAPI';
+
+export type { 
+  ArduinoSerialConfig 
+} from '../../simulation/virtual-port/ArduinoSerialAPI';

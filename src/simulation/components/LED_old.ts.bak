@@ -1,0 +1,185 @@
+import { DigitalComponent } from './base/DigitalComponent';
+import { ComponentUpdateContext } from './base/Component';
+
+/**
+ * LED (Light Emitting Diode) component implementation
+ */
+export class LEDComponent extends DigitalComponent {
+  private color: string;
+  private forwardVoltage: number; // volts
+  private maxCurrent: number;     // amperes
+  private brightness: number;     // 0-1, calculated based on current
+  private isOn: boolean;
+
+  constructor(id: string, color: string = 'red', forwardVoltage: number = 2.0) {
+    super(id, 'led', `LED_${color}`, [
+      { id: 'anode', name: 'Anode', number: 1, type: 'digital', direction: 'input' },
+      { id: 'cathode', name: 'Cathode', number: 2, type: 'digital', direction: 'input' }
+    ]);
+    
+    this.color = color;
+    this.forwardVoltage = forwardVoltage;
+    this.maxCurrent = 0.025; // 25mA maximum safe current
+    this.brightness = 0;
+    this.isOn = false;
+    
+    this.properties = {
+      color,
+      forwardVoltage,
+      maxCurrent: this.maxCurrent,
+      typicalCurrent: 0.02 // 20mA typical current
+    };
+  }
+  }
+
+  /**
+   * Update LED state based on voltage across anode and cathode
+   */
+  update(): void {
+    const voltageDrop = this.anodeVoltage - this.cathodeVoltage;
+
+    // LED turns on when forward voltage threshold is exceeded
+    const wasOn = this._isOn;
+    this._isOn = voltageDrop >= this.properties.forwardVoltage;
+
+    if (this._isOn) {
+      // Calculate brightness based on current (simplified model)
+      const excessVoltage = voltageDrop - this.properties.forwardVoltage;
+      const current = Math.min(excessVoltage * 0.01, this.properties.maxCurrent);
+      this._brightness = Math.min(current / this.properties.forwardCurrent, 1.0);
+    } else {
+      this._brightness = 0;
+    }
+
+    // Update brightness property
+    this.properties.brightness = this._brightness;
+
+    // Emit state change event if LED changed state
+    if (wasOn !== this._isOn) {
+      this.onStateChange(this._isOn);
+    }
+  }
+
+  /**
+   * Set the voltage on the anode pin
+   */
+  setAnodeVoltage(voltage: number): void {
+    this.anodeVoltage = voltage;
+  }
+
+  /**
+   * Set the voltage on the cathode pin
+   */
+  setCathodeVoltage(voltage: number): void {
+    this.cathodeVoltage = voltage;
+  }
+
+  /**
+   * Reset LED to initial state
+   */
+  reset(): void {
+    this._brightness = 0;
+    this._isOn = false;
+    this.anodeVoltage = 0;
+    this.cathodeVoltage = 0;
+    this.properties.brightness = 0;
+  }
+
+  /**
+   * Get render data for visual representation
+   */
+  getRenderData(): LEDRenderData {
+    return {
+      position: this.position,
+      color: this.properties.color,
+      isOn: this._isOn,
+      brightness: this._brightness,
+      size: { width: 20, height: 20 }
+    };
+  }
+
+  /**
+   * Validate LED configuration
+   */
+  validate(): string[] {
+    const errors: string[] = [];
+    
+    if (this.properties.forwardVoltage <= 0) {
+      errors.push('Forward voltage must be positive');
+    }
+    
+    if (this.properties.forwardCurrent <= 0) {
+      errors.push('Forward current must be positive');
+    }
+    
+    if (this.properties.maxCurrent <= this.properties.forwardCurrent) {
+      errors.push('Maximum current must be greater than forward current');
+    }
+    
+    const validColors = ['red', 'green', 'blue', 'yellow', 'white', 'orange', 'purple'];
+    if (!validColors.includes(this.properties.color.toLowerCase())) {
+      errors.push(`Invalid LED color: ${this.properties.color}`);
+    }
+    
+    return errors;
+  }
+
+  /**
+   * Get LED brightness (0-1)
+   */
+  getBrightness(): number {
+    return this._brightness;
+  }
+
+  /**
+   * Check if LED is on
+   */
+  isOn(): boolean {
+    return this._isOn;
+  }
+
+  /**
+   * Get voltage drop across LED
+   */
+  getVoltageDrop(): number {
+    return this.anodeVoltage - this.cathodeVoltage;
+  }
+
+  /**
+   * Handle state change events
+   */
+  private onStateChange(isOn: boolean): void {
+    console.log(`LED ${this.name} (${this.id}) turned ${isOn ? 'ON' : 'OFF'}`);
+  }
+
+  /**
+   * Set LED color
+   */
+  setColor(color: string): void {
+    this.properties.color = color;
+  }
+
+  /**
+   * Get power consumption in watts
+   */
+  getPowerConsumption(): number {
+    if (!this._isOn) return 0;
+    
+    const voltageDrop = this.getVoltageDrop();
+    const current = Math.min((voltageDrop - this.properties.forwardVoltage) * 0.01, this.properties.maxCurrent);
+    return voltageDrop * current;
+  }
+
+  /**
+   * Serialize component for saving
+   */
+  serialize() {
+    return {
+      id: this.id,
+      type: this.type,
+      name: this.name,
+      properties: { ...this.properties },
+      position: { ...this.position }
+    };
+  }
+}

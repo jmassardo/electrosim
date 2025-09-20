@@ -3,11 +3,11 @@ import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+// import { DndProvider } from 'react-dnd';
+// import { HTML5Backend } from 'react-dnd-html5-backend';
 
 import { store } from './store';
-import App from './App';
+import App from './App'; // Main app
 
 // Create Material-UI theme
 const theme = createTheme({
@@ -40,9 +40,8 @@ root.render(
     <Provider store={store}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <DndProvider backend={HTML5Backend}>
-          <App />
-        </DndProvider>
+        {/* Main ElectroSim App */}
+        <App />
       </ThemeProvider>
     </Provider>
   </React.StrictMode>

@@ -1,7 +1,7 @@
 import { dialog, BrowserWindow } from 'electron';
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { ElectroLoomProject } from '../shared/types';
+import { ElectroSimProject } from '../shared/types';
 
 export async function showOpenDialog(parentWindow: BrowserWindow): Promise<string | null> {
   const result = await dialog.showOpenDialog(parentWindow, {
@@ -37,10 +37,10 @@ export async function showSaveDialog(parentWindow: BrowserWindow, defaultName?: 
   return result.filePath;
 }
 
-export async function loadProject(filePath: string): Promise<ElectroLoomProject> {
+export async function loadProject(filePath: string): Promise<ElectroSimProject> {
   try {
     const content = await fs.readFile(filePath, 'utf-8');
-    const project: ElectroLoomProject = JSON.parse(content);
+    const project: ElectroSimProject = JSON.parse(content);
     
     // Basic validation
     if (!project.id || !project.name || !project.circuit || !project.sketch) {
@@ -56,14 +56,14 @@ export async function loadProject(filePath: string): Promise<ElectroLoomProject>
   }
 }
 
-export async function saveProject(filePath: string, project: ElectroLoomProject): Promise<void> {
+export async function saveProject(filePath: string, project: ElectroSimProject): Promise<void> {
   try {
     // Ensure directory exists
     const dir = path.dirname(filePath);
     await fs.mkdir(dir, { recursive: true });
     
     // Update project metadata
-    const projectToSave: ElectroLoomProject = {
+    const projectToSave: ElectroSimProject = {
       ...project,
       metadata: {
         ...project.metadata,
@@ -81,11 +81,11 @@ export async function saveProject(filePath: string, project: ElectroLoomProject)
   }
 }
 
-export async function createNewProject(name: string): Promise<ElectroLoomProject> {
+export async function createNewProject(name: string): Promise<ElectroSimProject> {
   const now = new Date().toISOString();
   const projectId = `project_${Date.now()}`;
   
-  const newProject: ElectroLoomProject = {
+  const newProject: ElectroSimProject = {
     id: projectId,
     name,
     version: '1.0.0',

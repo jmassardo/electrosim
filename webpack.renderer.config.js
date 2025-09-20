@@ -6,7 +6,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 
 module.exports = {
   mode: isDevelopment ? 'development' : 'production',
-  target: 'electron-renderer',
+  target: 'web',
   entry: './src/renderer/index.tsx',
   output: {
     path: path.resolve(__dirname, 'dist', 'renderer'),
@@ -19,14 +19,7 @@ module.exports = {
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        use: [
-          {
-            loader: 'ts-loader',
-            options: {
-              transpileOnly: isDevelopment,
-            },
-          },
-        ],
+        use: 'ts-loader',
       },
       {
         test: /\.css$/,
@@ -35,16 +28,10 @@ module.exports = {
       {
         test: /\.(png|jpe?g|gif|svg)$/,
         type: 'asset/resource',
-        generator: {
-          filename: 'images/[name].[hash][ext]',
-        },
       },
       {
         test: /\.(woff2?|eot|ttf|otf)$/,
         type: 'asset/resource',
-        generator: {
-          filename: 'fonts/[name].[hash][ext]',
-        },
       },
     ],
   },
@@ -60,9 +47,9 @@ module.exports = {
       template: './src/renderer/index.html',
       filename: 'index.html',
       inject: 'body',
-      minify: !isDevelopment,
     }),
     new webpack.DefinePlugin({
+      global: 'globalThis',
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
     }),
   ],
@@ -83,7 +70,7 @@ module.exports = {
     static: {
       directory: path.join(__dirname, 'dist', 'renderer'),
     },
-    hot: true,
+    hot: false,
     port: 3000,
     historyApiFallback: true,
   },

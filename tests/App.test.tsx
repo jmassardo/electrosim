@@ -14,7 +14,7 @@ jest.mock('../src/renderer/store', () => ({
 describe('App Component', () => {
   it('renders welcome message', () => {
     render(<App />);
-    expect(screen.getByText(/Welcome to ElectroLoom/i)).toBeInTheDocument();
+    expect(screen.getByText(/Welcome to ElectroSim/i)).toBeInTheDocument();
   });
 
   it('renders project action buttons', () => {
@@ -25,6 +25,6 @@ describe('App Component', () => {
 
   it('displays app title', () => {
     render(<App />);
-    expect(screen.getByRole('heading', { name: /🔌 ElectroLoom/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /🔌 ElectroSim/i })).toBeInTheDocument();
   });
 });

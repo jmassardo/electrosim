@@ -31,7 +31,7 @@ const App: React.FC = () => {
     let cleanup: (() => void) | undefined;
     
     // Check if we're running in Electron
-    if (window.electronAPI) {
+    if (window.electronAPI && window.electronAPI.menu) {
       console.log('Running in Electron environment');
       
       // Set up menu event listeners
@@ -62,7 +62,9 @@ const App: React.FC = () => {
 
       // Setup cleanup function for Electron
       cleanup = () => {
-        window.electronAPI.menu.removeAllListeners();
+        if (window.electronAPI && window.electronAPI.menu) {
+          window.electronAPI.menu.removeAllListeners();
+        }
       };
     } else {
       console.log('Running in browser environment (development)');
@@ -78,7 +80,7 @@ const App: React.FC = () => {
   };
 
   const handleOpenProject = async () => {
-    if (window.electronAPI) {
+    if (window.electronAPI && window.electronAPI.project) {
       try {
         const result = await window.electronAPI.project.open();
         if (result) {
@@ -91,7 +93,7 @@ const App: React.FC = () => {
   };
 
   const handleWindowControl = async (action: 'minimize' | 'maximize' | 'close') => {
-    if (window.electronAPI) {
+    if (window.electronAPI && window.electronAPI.window) {
       try {
         switch (action) {
           case 'minimize':

@@ -1,5 +1,26 @@
-import { session, BrowserWindow } from 'electron';
+import { app, session, BrowserWindow } from 'electron';
 import * as path from 'path';
+
+/**
+ * Production Content Security Policy.
+ *
+ * - 'unsafe-eval' is kept in script-src ONLY because Monaco Editor's language
+ *   services use `new Function()` for web workers. This is a known tradeoff.
+ * - 'unsafe-inline' is kept in style-src ONLY because MUI injects inline styles.
+ * - 'unsafe-inline' is NOT present in script-src or default-src (critical security gain).
+ * - worker-src allows blob: for Monaco Editor web workers.
+ */
+const PRODUCTION_CSP = [
+  "default-src 'self'; " +
+  "script-src 'self' 'unsafe-eval'; " +
+  "style-src 'self' 'unsafe-inline'; " +
+  "font-src 'self' data:; " +
+  "img-src 'self' data: blob:; " +
+  "connect-src 'self' ws://localhost:*; " +
+  "worker-src 'self' blob:; " +
+  "frame-src 'none'; " +
+  "object-src 'none';",
+];
 
 export function setupSecurity(): void {
   // Set up permission handler
@@ -17,21 +38,12 @@ export function setupSecurity(): void {
     }
   });
 
-  // Block insecure content
+  // Apply production CSP via response headers
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {
         ...details.responseHeaders,
-        'Content-Security-Policy': [
-          "default-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
-          "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
-          "style-src 'self' 'unsafe-inline'; " +
-          "font-src 'self' data:; " +
-          "img-src 'self' data: blob:; " +
-          "connect-src 'self' ws://localhost:*; " +
-          "frame-src 'none'; " +
-          "object-src 'none';"
-        ],
+        'Content-Security-Policy': PRODUCTION_CSP,
       },
     });
   });
@@ -136,4 +148,57 @@ export function validateSerialPortName(portName: string): boolean {
   ];
 
   return validPortPatterns.some(pattern => pattern.test(portName));
+}
+
+/**
+ * Returns the list of directories that file operations are allowed to access.
+ * Uses lazy evaluation since `app.getPath()` is not available before app ready.
+ */
+function getAllowedDirectories(): string[] {
+  return [
+    app.getPath('userData'),    // App data directory
+    app.getPath('documents'),   // User documents
+    app.getPath('temp'),        // Temp directory
+    app.getPath('home'),        // Home directory (for project files)
+  ];
+}
+
+/**
+ * Validates and resolves a file path, ensuring it is within allowed directories
+ * and does not contain path injection attempts.
+ *
+ * @param filePath - The raw file path to validate
+ * @param allowedDirs - Optional override for allowed base directories
+ * @returns Object with safety status, resolved path, and optional error message
+ */
+export function safePath(
+  filePath: string,
+  allowedDirs?: string[],
+): { safe: boolean; resolved: string; error?: string } {
+  try {
+    const resolved = path.resolve(filePath);
+
+    // Check for null bytes (path injection)
+    if (resolved.includes('\0')) {
+      return { safe: false, resolved, error: 'Path contains null bytes' };
+    }
+
+    // Check for path traversal after resolution
+    const normalized = path.normalize(resolved);
+    if (normalized !== resolved) {
+      return { safe: false, resolved, error: 'Path contains suspicious segments' };
+    }
+
+    // Check against allowed directories
+    const dirs = allowedDirs || getAllowedDirectories();
+    const isAllowed = dirs.some((dir) => resolved.startsWith(dir + path.sep) || resolved === dir);
+
+    if (!isAllowed) {
+      return { safe: false, resolved, error: 'Path is outside allowed directories' };
+    }
+
+    return { safe: true, resolved };
+  } catch {
+    return { safe: false, resolved: filePath, error: 'Invalid path' };
+  }
 }

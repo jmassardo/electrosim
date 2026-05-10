@@ -249,9 +249,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/electroloom/electroloom.git"
+    "url": "https://github.com/jmassardo/electrosim.git"
   },
   "bugs": {
-    "url": "https://github.com/electroloom/electroloom/issues"
+    "url": "https://github.com/jmassardo/electrosim/issues"
   }
 }
